@@ -1,0 +1,142 @@
+---
+title: "PMLProject"
+author: "Sammy kariuki"
+date: "October 30, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Excutive Summary   
+
+Based on a dataset provided by HAR [http://groupware.les.inf.puc-rio.br/har](http://groupware.les.inf.puc-rio.br/har) we will train various predictive models and select the best and most accurate model to predict what exercise was performed using the provided pml-training dataset with 159 features.    
+
+We will take the following steps:
+
+- Load and process the raw data    
+- 
+
+
+#### Load libraries   
+    
+This section we load the R package that we shall use in this Project.    
+
+```{r, warning=FALSE, comment= FALSE, message=FALSE}
+library(readr)
+
+library(caret)
+
+library(rattle)
+
+library(randomForest)
+```
+
+#### Load Data   
+   
+```{r, warning=FALSE, comment= FALSE, message=FALSE}
+pml_training <- read_csv("./pml-training.csv")
+
+pml_testing<- read_csv("./pml-testing.csv")
+```
+       
+## Preprocessing
+       
+#### Select on the relevant variable and create training and validation dataset   
+    
+```{r, warning=FALSE, comment= FALSE, message=FALSE}
+# relevant variable by the proportion missing data
+
+# 1. Training
+
+relevant_var <- names(pml_training)[(colSums(is.na(pml_training))/dim(pml_training)[1] < 0.50)]
+
+# 2. Testing
+
+relevant_vartest <- names(pml_testing)[(colSums(is.na(pml_testing))/dim(pml_testing)[1] < 0.50)]
+
+# Check if there is any variable relevant in training and not in testing data set
+
+"%ni%" <- Negate("%in%")
+relevant_var[relevant_vartest  %ni% relevant_var]
+```
+      
+    
+    
+```{r, warning=FALSE, comment= FALSE, message=FALSE}
+# select relevant variable
+
+pml_test <- pml_testing[, relevant_vartest]
+
+pml_test <- pml_test[, -c(1:7)]
+
+pml_train <- pml_training[, relevant_var]
+
+pml_train <- pml_train[, -c(1:7)]
+
+row_has_NA <- apply(pml_train, 1, function(x){any(is.na(x))})
+
+pml_train <- pml_train[!row_has_NA, ]
+
+pml_train$classe <- as.factor(pml_train$classe)
+
+
+# partition train and validataion set
+
+set.seed(5000)
+
+InTrain <- createDataPartition(pml_train$classe, p = 0.7, list = FALSE)
+
+training <- pml_train[InTrain, ]
+
+testing <- pml_train[-InTrain, ]
+```
+     
+#### Exploratory Analysis
+
+```{r, warning=FALSE, comment= FALSE, message=FALSE}
+# Compare dimension of data set before and after eliminating less relevant variable
+
+dim(pml_training) # original available dataset
+
+dim(training) # used training model
+
+dim(testing) # used for varidation of model
+
+dim(pml_testing) # unseen data to predict
+
+# check if the data is biased
+
+table(training$classe)
+
+table(testing$classe)
+```
+     
+#### Fit a model rpart in caret package   
+     
+```{r, warning=FALSE, comment= FALSE, message=FALSE}
+RpartModel_fit <- train(classe ~., method = "rpart", data = training)
+
+Validation_pred <- predict(RpartModel_fit, testing)
+
+confusionMatrix(Validation_pred, testing$classe)$overall[1]
+
+fancyRpartPlot(RpartModel_fit$finalModel)
+```
+      
+#### fit random forest model    
+     
+```{r, warning=FALSE, comment= FALSE, message=FALSE}
+RFmodel_Fit <- randomForest(classe ~ ., data = training)
+
+pred_valid <- predict(RFmodel_Fit, testing)
+
+confusionMatrix(pred_valid, testing$classe)$overall[1]
+
+RFmodel_Fit$confusion
+
+pred_classe <- predict(RFmodel_Fit, pml_test)
+
+pred_classe
+```
+
