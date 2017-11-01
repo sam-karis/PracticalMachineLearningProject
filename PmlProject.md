@@ -13,6 +13,8 @@ We will take the following steps:
 - Preprocessing   
 - Exploratory Analysis
 - Data Partitioning
+- Fit Model and Selection
+- Prediction
 
 ## Load and process Data    
      
@@ -140,6 +142,7 @@ summary(pml_test)
 ```
     
 Lets see how much we have reduced the dimension of the data after processing    
+    
 
 ```r
 dim(pml_training) 
@@ -196,12 +199,13 @@ FALSE
 FALSE     A     B     C     D     E 
 FALSE 28.43 19.35 17.44 16.39 18.38
 ```
+     
 From the analysis we can see we reduced our variables from 160 to 56 and excluded one observation.  
 Also we can see that generally B, C, D, E balanced between 16 - 19 percentage but for A outcome it is generally higher with 28 percentage.   
      
 ## Data Partitioning    
     
-In this section we partition data into training(0.7) and validation(0.3) dataset.
+In this section we partition data into training(0.7) and validation(0.3) dataset using the **createDataPartition** function in caret function.    
    
 
 ```r
@@ -222,7 +226,7 @@ Validation <- pml_train[-InTrain, ]
      
 ## Fit Model and Selection    
     
-In this section we will utilize caret and randomforest packages to fit rpart and randomforest model and select the best model by eveluating the out of sample error using the Validation dataset.   
+In this section we will utilize caret and randomforest packages to fit rpart and randomforest model and select the best model by eveluating the out of sample error using the Validation dataset creating above.   
     
 #### 1. Fit a model rpart in caret package   
      
@@ -249,8 +253,13 @@ fancyRpartPlot(RpartModel_fit$finalModel)
 ```
 
 ![](PmlProject_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
-      
-#### 4. Fit random forest model    
+     
+From using model we can generally understand how the decision for example from the plot above. The model is also easier to understand and interpretated.    
+On the other hand the model in this case has an accuracy of 0.5667913 which is quite low when fit a model where it's main purpose is to predict unseen data. For this reason we move to the next model.     
+     
+####  2. Fit random forest model       
+     
+Here we utilize the randomforest package to fit the model and test it accuracy.   
      
 
 ```r
@@ -281,9 +290,14 @@ FALSE D    0    0   15 2237    0 0.006660746
 FALSE E    0    0    0    4 2521 0.001584158
 ```
      
-## 3. Prediction   
+From this model a very high accuracy i.e. 0.9974507 which quite good for a predictive model.   
+This is attributed to the fact that it is based on creating a forest of trees. Also from model confusion result we can see that from the train data it predict almost all classe right apart from 15 D and 4 E classe.   
+The only disadvantage for this model it is less interpretable, but because the purpose of this project is prediction we select it as our best model.   
+     
+#### 3. Prediction   
     
-Here we use the best model to predict classe outcome for the unseen pml_test data 
+Here we use the best model we have selected above in this case it is the randomforest predictive model to predict classe outcome for the unseen pml_test data.    
+     
 
 ```r
 pred_classe <- predict(RFmodel_Fit, pml_test)
@@ -296,4 +310,3 @@ pred_classe
 ##  B  A  B  A  A  E  D  B  A  A  B  C  B  A  E  E  A  B  B  B 
 ## Levels: A B C D E
 ```
-
