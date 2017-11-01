@@ -58,7 +58,7 @@ length(relevant_var)
 ```
 
 ```
-FALSE [1] 60
+## [1] 60
 ```
 
 ```r
@@ -70,7 +70,7 @@ length(relevant_vartest)
 ```
 
 ```
-FALSE [1] 60
+## [1] 60
 ```
 
 ```r
@@ -82,7 +82,7 @@ relevant_var[relevant_vartest  %ni% relevant_var]
 ```
 
 ```
-FALSE [1] "classe"
+## [1] "classe"
 ```
 
 ```r
@@ -90,7 +90,7 @@ relevant_vartest[relevant_var  %ni% relevant_vartest]
 ```
 
 ```
-FALSE [1] "problem_id"
+## [1] "problem_id"
 ```
       
 From this we can see that in both training and testing data there are atleast 60 variable with more than 50 percentage of the observation and on further we can see in the training data exist a variable **classe** which is our outcome for this project but its is not in the testing set. Also  variable **problem** exist only in testing data.    
@@ -149,7 +149,7 @@ dim(pml_training)
 ```
 
 ```
-FALSE [1] 19622   160
+## [1] 19622   160
 ```
 
 ```r
@@ -157,7 +157,7 @@ dim(pml_train)
 ```
 
 ```
-FALSE [1] 19621    55
+## [1] 19621    55
 ```
 
 ```r
@@ -165,7 +165,7 @@ dim(pml_testing)
 ```
 
 ```
-FALSE [1]  20 160
+## [1]  20 160
 ```
 
 ```r
@@ -173,7 +173,7 @@ dim(pml_test)
 ```
 
 ```
-FALSE [1] 20 54
+## [1] 20 54
 ```
 
 ```r
@@ -183,9 +183,9 @@ table(pml_train$classe)
 ```
 
 ```
-FALSE 
-FALSE    A    B    C    D    E 
-FALSE 5579 3797 3422 3216 3607
+## 
+##    A    B    C    D    E 
+## 5579 3797 3422 3216 3607
 ```
 
 ```r
@@ -195,9 +195,9 @@ round((table(pml_train$classe)/dim(pml_train)[1])*100, 2)
 ```
 
 ```
-FALSE 
-FALSE     A     B     C     D     E 
-FALSE 28.43 19.35 17.44 16.39 18.38
+## 
+##     A     B     C     D     E 
+## 28.43 19.35 17.44 16.39 18.38
 ```
      
 From the analysis we can see we reduced our variables from 160 to 56 and excluded one observation.  
@@ -237,15 +237,21 @@ Here we utilize the **train** function in caret package fit a model using the rp
 set.seed(498)
 
 RpartModel_fit <- train(classe ~., method = "rpart", data = training)
+```
 
+```
+## Warning: package 'rpart' was built under R version 3.4.2
+```
+
+```r
 Validation_pred <- predict(RpartModel_fit, Validation)
 
 confusionMatrix(Validation_pred, Validation$classe)$overall[1]
 ```
 
 ```
-FALSE  Accuracy 
-FALSE 0.5667913
+##  Accuracy 
+## 0.5667913
 ```
 
 ```r
@@ -273,8 +279,8 @@ confusionMatrix(pred_valid, Validation$classe)$overall[1]
 ```
 
 ```
-FALSE  Accuracy 
-FALSE 0.9974507
+##  Accuracy 
+## 0.9974507
 ```
 
 ```r
@@ -282,12 +288,12 @@ RFmodel_Fit$confusion
 ```
 
 ```
-FALSE      A    B    C    D    E class.error
-FALSE A 3906    0    0    0    0 0.000000000
-FALSE B    5 2651    2    0    0 0.002633559
-FALSE C    0   11 2385    0    0 0.004590985
-FALSE D    0    0   15 2237    0 0.006660746
-FALSE E    0    0    0    4 2521 0.001584158
+##      A    B    C    D    E class.error
+## A 3906    0    0    0    0 0.000000000
+## B    5 2651    2    0    0 0.002633559
+## C    0   11 2385    0    0 0.004590985
+## D    0    0   15 2237    0 0.006660746
+## E    0    0    0    4 2521 0.001584158
 ```
      
 From this model a very high accuracy i.e. 0.9974507 which quite good for a predictive model.   

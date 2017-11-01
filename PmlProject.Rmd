@@ -55,7 +55,7 @@ pml_testing<- read_csv("./pml-testing.csv")
     
 In this section we Select the relevant variables by calculating the proportion missing data from the total observations and if more than half we drop the variable.   
     
-```{r, warning=FALSE, comment= FALSE, message=FALSE}
+```{r}
 
 # 1. Training
 
@@ -84,7 +84,7 @@ From this we can see that in both training and testing data there are atleast 60
     
 Here we create a subset for relevent data according to proportionality of data available and then move a step further to eliminate some variable such as X1 and any variable related to timestamp.    
     
-```{r, warning=FALSE, comment= FALSE, message=FALSE}
+```{r}
 
 pml_test <- pml_testing[, relevant_vartest]
 
@@ -129,7 +129,7 @@ summary(pml_test)
     
 Lets see how much we have reduced the dimension of the data after processing    
     
-```{r, warning=FALSE, comment= FALSE, message=FALSE} 
+```{r} 
 
 dim(pml_training) 
 
@@ -180,7 +180,7 @@ In this section we will utilize caret and randomforest packages to fit rpart and
      
 Here we utilize the **train** function in caret package fit a model using the rpart method.   
     
-```{r, warning=FALSE, comment= FALSE, message=FALSE}
+```{r}
 
 set.seed(498)
 
@@ -200,7 +200,7 @@ On the other hand the model in this case has an accuracy of 0.5667913 which is q
      
 Here we utilize the randomforest package to fit the model and test it accuracy.   
      
-```{r, warning=FALSE, comment= FALSE, message=FALSE}
+```{r}
 
 set.seed(499)
 
